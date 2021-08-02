@@ -22,8 +22,8 @@ class AnnouncementFactory extends Factory
      */
     public function definition()
     {
-        $user_id = $data['user_id'] ?? User::factory()->create();
-        $startDate = now()->addHours(rand(0, 24));
+        $user_id = User::factory()->create();
+        $startDate = now()->addHours(rand(1, 24));
         $endDate = $startDate->copy()->addHours(rand(20, 140));
 
         return [

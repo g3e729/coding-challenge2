@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+use \App\Models\Role;
+
 Route::get('/', function () {
     return view('page');
 })->middleware('check.role')->name('login');

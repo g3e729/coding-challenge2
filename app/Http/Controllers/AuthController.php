@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -19,13 +20,18 @@ class AuthController extends Controller
 
             $user         = (new UserService)->createUser($validatedData);
             $access_token = $user->createToken('authToken')->accessToken;
+            $role = Role::where('name', Role::ROLE_VIEW)->first();
+            
+            if ($role) {
+                $user->roles()->attach([$role->id]);
+            }
 
             return response(compact('user', 'access_token'));
         } catch (\Exception $exception) {
             \Log::error($exception->getMessage());
         }
 
-        return response(null);
+        return response(['message' => 'Please check inputs and try again.'], 422);
     }
 
     public function login(Request $request)
@@ -48,7 +54,7 @@ class AuthController extends Controller
             \Log::error($exception->getMessage());
         }
 
-        return response(null);
+        return response(['message' => 'Invalid Credentials'], 422);
     }
 
     public function logout()

@@ -3,6 +3,7 @@ var user_email = localStorage.getItem('user_email');
 var user_name  = localStorage.getItem('user_name');
 var token      = localStorage.getItem('token');
 
+var registerBlock           = $('#register-block');
 var loginBlock              = $('#login-block');
 var announcementsBlock      = $('#announcements-block');
 var announcementBlock       = $('#announcement-block');
@@ -158,18 +159,38 @@ jQuery.extend({
         }
     },
     register: function (data) {
+        var errorMessage   = null;
+        var successMessage = null;
+        
         $.ajax({
             async: false,
             url: "/api/register",
             method: "POST",
             data: data,
             success: function (result) {
-                localStorage.setItem('user', result.user);
+
+                console.log(result);
+
+                localStorage.setItem('user_id', result.user.id);
+                localStorage.setItem('user_name', result.user.name);
+                localStorage.setItem('user_email', result.user.email);
                 localStorage.setItem('token', result.access_token);
+
+                user_id    = result.user.id;
+                user_name  = result.user.name;
+                user_email = result.user.email;
+                token      = result.access_token;
+            },
+            error: function (result) {
+                errorMessage = result.responseJSON.message;
             }
         });
 
-        $.authenticated();
+        if (errorMessage == null) {
+            $.authenticated();
+        } else {
+            $.displayErrorMessage(errorMessage);
+        }
     },
     login: function (data) {
         var errorMessage   = null;
@@ -236,6 +257,7 @@ jQuery.extend({
         $('#getMyAnnouncements').addClass('d-none');
         $('#logout').addClass('d-none');
 
+        registerBlock.removeClass('d-none');
         loginBlock.removeClass('d-none');
         announcementsBlock.addClass('d-none');
         announcementBlock.addClass('d-none');
@@ -252,6 +274,7 @@ jQuery.extend({
             $('#getAnnouncements').removeClass('d-none');
             $('#getMyAnnouncements').removeClass('d-none');
             $('#logout').removeClass('d-none');
+            registerBlock.addClass('d-none');
             loginBlock.addClass('d-none');
             announcementsBlock.removeClass('d-none');            
             announcementsBlock.find('table tbody tr').remove();

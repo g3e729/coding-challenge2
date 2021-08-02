@@ -6,9 +6,13 @@ use App\Models\Announcement;
 
 class AnnouncementService
 {
-    public function getAnnouncements()
+    public function getAnnouncements($scheduled = true)
     {
-        return Announcement::isActive()->where('startDate', '<', now())->where('endDate', '>', now())->get();
+        if ($scheduled) {
+            return Announcement::isActive()->where('startDate', '<', now())->where('endDate', '>', now())->get();
+        }
+
+        return Announcement::isActive()->get();
     }
 
     public function getUserAnnouncements($user_id)
@@ -37,14 +41,13 @@ class AnnouncementService
         $announcement = new Announcement;
         $columns      = self::columns();
 
-        $announcement->user_id = auth()->id();
-
         foreach ($columns as $column) {
             if (isset($request[$column])) {
                 $announcement->$column = $request[$column];
             }
         }
 
+        $announcement->user_id = $request['user_id'] ?? auth()->id();
         $announcement->save();
 
         return $announcement;

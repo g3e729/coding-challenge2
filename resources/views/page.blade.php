@@ -6,6 +6,8 @@
     <div id="global-success-message" class="alert alert-success d-none" role="alert"></div>
     <div class="row justify-content-center">
         <div class="col-md-12">
+            @include('partials.register')
+
             @include('partials.login')
 
             @include('announcements.index')
